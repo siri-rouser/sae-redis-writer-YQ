@@ -1,4 +1,4 @@
-FROM python:3.11-slim AS build
+FROM python:3.10-slim-bullseye AS build
 
 RUN apt update && apt install --no-install-recommends -y \
     curl \
@@ -22,7 +22,7 @@ COPY . /code/
 
 ### Main artifact / deliverable image
 
-FROM python:3.11-slim
+FROM python:3.10-slim-bullseye
 RUN apt update && apt install --no-install-recommends -y \
     libglib2.0-0 \
     libgl1 \
@@ -32,3 +32,5 @@ COPY --from=build /code /code
 WORKDIR /code
 ENV PATH="/code/.venv/bin:$PATH"
 CMD [ "python", "main.py" ]
+
+# To build use: sudo docker build -t mcvt_yq/redis_writer_arm64:latest --platform linux/arm64 .
