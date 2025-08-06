@@ -1,0 +1,4 @@
+(rediswriter) yuqiang@ubuntu:~/yl4300/Multi-Camera-Vision-Pipeline-YQ/subpackages/redis-writer-YQ/sae-redis-writer-YQ$ git branch
+  local_writer_arm64: This is the local_sae_writer branch, which consumes multiple .saedump file and push to target remote redis network 
+* main: The orignal one, which works on PC
+  redis_writer_arm64: The arm64 one, just consume target stream on local (e.g. featureextractor:stream1) and push to target remote redis network
