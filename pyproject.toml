@@ -10,8 +10,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2.0.0"
-visionapi = { git = "https://github.com/starwit/vision-api.git", subdirectory = "python/visionapi", tag = "2.0.0" }
-visionlib = { git = "https://github.com/starwit/vision-lib.git", subdirectory = "python", tag = "0.10.0" }
+visionapi_yq = {git = "https://github.com/siri-rouser/visionapi_YQ.git", rev= 'f55d5788136c29056baac403e8772fea6df0af4c', subdirectory="visionapi_YQ", tag = "0.0.1" }
+visionlib = { git = "https://github.com/starwit/vision-lib.git", subdirectory = "python", tag = "0.13.0" }
 redis = "^5.0.0"
 pydantic-settings = "^2.0.3"
 prometheus-client = "^0.17.1"

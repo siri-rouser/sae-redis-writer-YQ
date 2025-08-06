@@ -24,6 +24,8 @@ class RedisWriterConfig(BaseSettings):
     redis: RedisConfig = RedisConfig()
     target_redis: TargetRedisConfig
     stream_ids: List[str] = ['stream1']
+    saedump_files: List[str] = []
+    adjust_timestamp: bool = True
     remove_frame_data: bool = True
 
     model_config = SettingsConfigDict(env_nested_delimiter='__')

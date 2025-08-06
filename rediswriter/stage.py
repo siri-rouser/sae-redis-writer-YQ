@@ -6,7 +6,7 @@ from prometheus_client import Counter, Histogram, start_http_server
 from visionlib.pipeline.consumer import RedisConsumer
 
 from .config import RedisWriterConfig
-from .rediswriter import RedisWriter
+from .saedumper import Saedumper
 from .sender import Sender
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,6 @@ def run_stage():
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
-    # Load config from settings.yaml / env vars
     CONFIG = RedisWriterConfig()
 
     logger.setLevel(CONFIG.log_level.value)
@@ -39,28 +38,23 @@ def run_stage():
 
     logger.info(f'Starting redis writer stage. Config: {CONFIG.model_dump_json(indent=2)}')
 
-    redis_writer = RedisWriter(CONFIG)
+    sae_writer = Saedumper(CONFIG)
 
-    consumer = RedisConsumer(CONFIG.redis.host, CONFIG.redis.port, 
-                            stream_keys=[f'{CONFIG.redis.input_stream_prefix}:{id}' for id in CONFIG.stream_ids])
-    
     sender = Sender(CONFIG)
     
-    with consumer as consume, sender as send:
-        for stream_key, proto_data in consume():
+    with sender as send:
+        while True:
             if stop_event.is_set():
                 break
 
-            if stream_key is None:
-                continue
-
             FRAME_COUNTER.inc()
 
-            output_proto_data = redis_writer.get(proto_data)
+            output_proto_data, stream_id = sae_writer.get()
 
             if output_proto_data is None:
                 continue
 
-            stream_id = stream_key.split(':')[1]
-            
-            send(f'{CONFIG.target_redis.output_stream_prefix}:{stream_id}', output_proto_data)
+            if stream_id and isinstance(stream_id, str):
+                send(f'{CONFIG.target_redis.output_stream_prefix}:{stream_id.split(":")[-1]}', output_proto_data)
+            else:
+                logger.warning(f'Invalid stream_id: {stream_id}')
